@@ -73,6 +73,10 @@ class QuizCore {
     return this.score;
   }
 
+  public getNumQuestions(): number {
+    return this.questions.length;
+  }
+
 }
 
 export default QuizCore;

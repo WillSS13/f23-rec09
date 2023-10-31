@@ -1,16 +1,16 @@
 import React, { Component, useState } from 'react'
 import './Quiz.css'
-import QuizQuestion from '../core/QuizQuestion';
 import QuizCore from '../core/QuizCore';
 
 interface QuizState {
+  quizCore: QuizCore
   selectedAnswer: string | null
 }
 
 const Quiz: React.FC = () => {
-  const quizCore: QuizCore = new QuizCore();
 
   const [state, setState] = useState<QuizState>({
+    quizCore: new QuizCore(),
     selectedAnswer: null,  // Initialize the selected answer.
   });
 
@@ -21,9 +21,14 @@ const Quiz: React.FC = () => {
 
   const handleButtonClick = (): void => {
     // Task3: Implement the logic for button click, such as moving to the next question.
-  } 
+    if (selectedAnswer) {
+      quizCore.answerQuestion(selectedAnswer);
+      quizCore.nextQuestion();
+      setState((prevState) => ({ ...prevState, selectedAnswer: null }));
+    }
+  }
 
-  const { selectedAnswer } = state;
+  const { quizCore, selectedAnswer } = state;
   const currentQuestion = quizCore.getCurrentQuestion();
 
   if (!currentQuestion) {
@@ -31,7 +36,7 @@ const Quiz: React.FC = () => {
       <div>
         <h2>Quiz Completed</h2>
         {/* <p>Final Score: {score} out of {questions.length}</p> */}
-        <p>Final Score: {quizCore.getScore()} out of </p>
+        <p>Final Score: {quizCore.getScore()} out of {quizCore.getNumQuestions( )}</p>
       </div>
     );
   }
@@ -54,10 +59,12 @@ const Quiz: React.FC = () => {
         ))}
       </ul>
 
-      <h3>Selected Answer:</h3>
-      <p>{selectedAnswer ?? 'No answer selected'}</p>
+      {(quizCore.hasNextQuestion()) ? (
+        <button onClick={handleButtonClick}>Next Question</button>
+      ) : (
+        <button onClick={handleButtonClick}>Submit</button>
+      )}
 
-      <button onClick={handleButtonClick}>Next Question</button>
     </div>
   );
 };
